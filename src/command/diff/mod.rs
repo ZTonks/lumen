@@ -3,9 +3,11 @@ mod app;
 mod context;
 mod coordinates;
 mod diff_algo;
+mod gh_mutation;
 pub mod git;
 mod global_search;
 pub mod highlight;
+mod pr_comments;
 mod render;
 mod search;
 mod state;
@@ -22,6 +24,7 @@ use std::thread;
 
 use spinoff::{spinners, Color, Spinner};
 
+use crate::command::diff::gh_mutation::gh_mutation;
 use crate::commit_reference::CommitReference;
 use crate::vcs::VcsBackend;
 
@@ -100,7 +103,10 @@ fn resolve_origin_repo() -> Result<String, String> {
     if parts.len() >= 2 {
         Ok(format!("{}/{}", parts[0], parts[1]))
     } else {
-        Err(format!("Could not parse owner/repo from origin URL: {}", url))
+        Err(format!(
+            "Could not parse owner/repo from origin URL: {}",
+            url
+        ))
     }
 }
 
@@ -285,17 +291,7 @@ fn mark_file_as_viewed_sync(node_id: &str, file_path: &str) -> Result<(), String
         node_id, file_path
     );
 
-    let output = Command::new("gh")
-        .args(["api", "graphql", "-f", &format!("query={}", mutation)])
-        .output()
-        .map_err(|e| format!("Failed to run gh api graphql: {}", e))?;
-
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        return Err(stderr.trim().to_string());
-    }
-
-    Ok(())
+    gh_mutation(&mutation)
 }
 
 /// Unmark a file as viewed on GitHub PR (blocking)
@@ -305,17 +301,7 @@ fn unmark_file_as_viewed_sync(node_id: &str, file_path: &str) -> Result<(), Stri
         node_id, file_path
     );
 
-    let output = Command::new("gh")
-        .args(["api", "graphql", "-f", &format!("query={}", mutation)])
-        .output()
-        .map_err(|e| format!("Failed to run gh api graphql: {}", e))?;
-
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        return Err(stderr.trim().to_string());
-    }
-
-    Ok(())
+    gh_mutation(&mutation)
 }
 
 fn detect_current_branch_pr() -> Result<String, String> {
