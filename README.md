@@ -18,6 +18,8 @@ Review `git diff`, commits, branches, or GitHub PRs side-by-side without leaving
 - Optional AI commit messages and change explanations (10+ providers)
 - Works with Git and Jujutsu (jj)
 
+ZT TEST
+
 [![Demo](https://github.com/user-attachments/assets/dc425871-3826-4368-88d8-931b9403f0ec)](https://github.com/user-attachments/assets/70d07324-8394-423c-bbc3-9460ed84877b)
 
 ## Table of Contents
@@ -101,6 +103,9 @@ lumen diff --focus src/main.rs
 # Soft-wrap long lines (also settable in lumen.config.json)
 lumen diff --wrap
 ```
+
+ZT OTHER TEST DIFF
+MULTI LINE
 
 #### Stacked Diff Mode
 
